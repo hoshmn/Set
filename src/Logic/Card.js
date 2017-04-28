@@ -1,16 +1,30 @@
 import React from 'react';
-// import Radium from 'radium';
+import Radium from 'radium';
+import PropTypes from 'prop-types';
 
 const colors = ['purple', 'blue', 'green'];
 const shapes = ['%', '@', '#'];
 
+// const flash =  Radium.keyframes({
+//     '0%': {
+//         background: 'white'
+//     },
+//     '50%': {
+//     	background: 'orange'
+//     },
+//     '100%': {
+//         background: 'white'
+//     }
+// });
+
 const style = {
-	'fontSize': '3em',
+	'fontSize': '1em',
 	'width': '8em',
 	'height': '8em',
 	'fontFamily': 'Courier',
 	'border': '1px solid black',
-	'textAlign': 'center'
+	'textAlign': 'center',
+	'userSelect': 'none'
 };
 
 const lineCreator = (pattern,shape) => {
@@ -27,17 +41,22 @@ const lineCreator = (pattern,shape) => {
 	}
 }
 
-export default ({r, c, val, select, selected}) => {
-	if (!val) return <DummyCard/>;
+const Card = ({r, c, cardInfo, select, isSelected}) => {
+	if (!cardInfo) return <DummyCard/>;
 	const thisStyle = {...style};
-	const {count,pattern,color,shape} = val;
+	const {count,pattern,color,shape,seen} = cardInfo;
 	const theShape = shapes[shape];
 	const line = lineCreator(pattern, theShape);
 	thisStyle.color = colors[color];
-	if (selected.includes(val)) thisStyle.background = 'yellow';
+	if (isSelected) thisStyle.backgroundColor = 'rgba(0,255,255,.2)';
+	if (!seen) {
+		thisStyle.transition = 'all .5s ease-out';
+		thisStyle.transform = 'rotateY(360deg)';
+		cardInfo.seen = true;
+	}
 	return (
 		<div
-			onClick={()=>select(val)}
+			onClick={()=>select(cardInfo)}
 			style={thisStyle}
 		> 
 			<div>&nbsp;</div>
@@ -50,6 +69,14 @@ export default ({r, c, val, select, selected}) => {
 		</div>)
 }
 
+Card.propTypes = {
+	r: PropTypes.number,
+	c: PropTypes.number,
+	val: PropTypes.object,
+	select: PropTypes.func,
+	selected: PropTypes.array
+}
+
 const DummyCard = () => (<div style={{...style, background:'black'}}>
 	<div>&nbsp;</div>
 	<div>&nbsp;</div>
@@ -58,3 +85,5 @@ const DummyCard = () => (<div style={{...style, background:'black'}}>
 	<div>&nbsp;</div>
 	<div>&nbsp;</div>
 	<div>&nbsp;</div></div>)
+
+export default Radium(Card);

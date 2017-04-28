@@ -8,9 +8,10 @@ export default ({deck, board, cardsLong, cardsWide, select, selected}) => {
 			board.map((row, r) => 
 				 <div style={{'display':'flex'}} key={r}>
 					{ 
-						row.map((val, c) => 
-						<Card key={c} r={r} c={c} val={val} select={select} selected={selected}/>
-						) 
+						row.map((cardInfo, c) => {
+							const isSelected = selected.includes(cardInfo);
+							return <Card key={c} r={r} c={c} cardInfo={cardInfo} select={select} isSelected={isSelected}/>
+						}) 
 					}
 				</div>
 			)

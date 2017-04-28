@@ -56,7 +56,8 @@ const initialState = {
 	selected: [],
 	setsTaken: 0,
 	status: 'Play on!',
-	playerName: 'You'
+	playerName: 'You',
+	cheat: false
 	// deck: shuffle(createDeck())
 }
 
@@ -68,16 +69,17 @@ class SetGame extends Component {
 		const board = deal(cardsLong, cardsWide, deck);
 		this.state = {...initialState, deck, board};
 		this.select = this.select.bind(this);
+		this.toggleCheat = this.toggleCheat.bind(this);
 	}
 
 	select(card){
-		this.setState(({selected,board,deck,setsTaken,status,playerName})=>{
+		this.setState(({selected,board,deck,setsTaken,status,playerName,cheat})=>{
 			//unselect card if already selected
-			let newSelected = selected.filter(crd=>crd!=card);
+			let newSelected = selected.filter(crd=>crd!==card);
 			//if it wasn't selected already, select it
 			if (newSelected.length === selected.length) newSelected.push(card);
 			if (newSelected.length > 2) {
-				if (validSet(newSelected)) {
+				if (validSet(newSelected)||cheat) {
 					newSelected.forEach(({placement})=>{ //replace
 						const {r,c} = placement;
 						const drawn = deck.pop();
@@ -96,9 +98,13 @@ class SetGame extends Component {
 			} else return {selected:newSelected};
 		});
 	}
+
+	toggleCheat(){
+		this.setState(({cheat})=>({cheat:!cheat}))
+	}
 	
 	render(){
-		const {deck, board, cardsLong, cardsWide, selected, setsTaken, playerName, status} = this.state;
+		const {deck, board, cardsLong, cardsWide, selected, setsTaken, playerName, status, cheat} = this.state;
 		return(
 			<div>
 			<Board 
@@ -111,6 +117,7 @@ class SetGame extends Component {
 			/>
 			<h1>{status}</h1>
 			<h2>{playerName}: {setsTaken}</h2>
+			<button onClick={this.toggleCheat}>Cheating: {cheat?'ON':'OFF'}</button>
 			</div>
 		)
 	}
